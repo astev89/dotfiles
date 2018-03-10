@@ -50,6 +50,19 @@ let g:airline_theme = 'tenderplus'
 " Use deoplete (auto-complete)
 let g:deoplete#enable_at_startup = 1
 
+" Tab from the top of autocomplete
+inoremap <silent><expr> <TAB>
+\ pumvisible() ? "\<C-n>" :
+\ <SID>check_back_space() ? "\<TAB>" :
+\ deoplete#mappings#manual_complete()
+function! s:check_back_space() abort "{{{
+let col = col('.') - 1
+return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}"
+
+" Autocomplete across buffers
+set complete=.,b,u,w,t,]
+
 " Javascript linting
 let g:ale_linters = {
 \  'javascript': ['eslint'],
@@ -87,6 +100,14 @@ Plug 'exitface/synthwave.vim'
 Plug 'nanotech/jellybeans.vim'
 Plug 'jacoborus/tender.vim'
 call plug#end()
+
+" Go format
+let g:go_fmt_options = "-tabs=false -tabwidth=8"
+" Format Go on save
+autocmd FileType go autocmd BufWritePre <buffer> Fmt
+autocmd FileType go setlocal shiftwidth=8 tabstop=8 softtabstop=8
+autocmd FileType go setlocal noexpandtab
+
 
 " after a re-source, fix syntax matching issues (concealing brackets):
 if exists('g:loaded_webdevicons')
