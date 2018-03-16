@@ -1,6 +1,61 @@
 set runtimepath^=~/.vim
 let &packpath = &runtimepath
 
+
+call plug#begin('~/.config/nvim/plugged')
+
+" Syntax / Autocomplete Plugs
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'neoclide/vim-jsx-improve'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+
+" Go Plugs
+Plug 'fatih/vim-go'
+Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
+Plug 'zchee/deoplete-go', { 'do': 'make'}
+
+" Search Plugs
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'haya14busa/incsearch.vim'
+
+" Git Plugs
+Plug 'tpope/vim-fugitive'
+Plug 'idanarye/vim-merginal'
+Plug 'jreybert/vimagit'
+Plug 'airblade/vim-gitgutter'
+
+" Shortcut Plugs
+Plug 'Raimondi/delimitMate'
+Plug 'easymotion/vim-easymotion'
+Plug 'tpope/vim-commentary'
+Plug 'mattn/emmet-vim'
+Plug 'tpope/vim-surround'
+Plug 'wellle/targets.vim'
+
+" Statusline / Filetree Plugs
+Plug 'scrooloose/nerdtree'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+
+" Style Plugs
+Plug 'ryanoasis/vim-devicons'
+Plug 'Yggdroot/indentLine'
+
+" Linting / Cleaning Plugs
+Plug 'w0rp/ale'
+Plug 'ntpeters/vim-better-whitespace'
+
+" Colorschemes
+Plug 'mkarmona/colorsbox'
+Plug 'exitface/synthwave.vim'
+Plug 'nanotech/jellybeans.vim'
+Plug 'jacoborus/tender.vim'
+
+call plug#end()
+
 syntax on
 set statusline=%f
 set statusline+=%{fugitive#statusline()}
@@ -24,7 +79,7 @@ set smarttab
 set smartindent
 set nowrap
 
-set encoding=utf8
+set encoding=UTF-8
 set completeopt-=preview
 
 " git gutter update time
@@ -45,7 +100,13 @@ let g:closetag_shortcut = '>'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'tenderplus'
+let g:airline_theme = 'jellybeans'
+
+" after a re-source, fix syntax matching issues (concealing brackets):
+if exists('g:loaded_webdevicons')
+    call webdevicons#softRefresh()
+endif
+
 
 " Use deoplete (auto-complete)
 let g:deoplete#enable_at_startup = 1
@@ -55,67 +116,27 @@ inoremap <silent><expr> <TAB>
 \ pumvisible() ? "\<C-n>" :
 \ <SID>check_back_space() ? "\<TAB>" :
 \ deoplete#mappings#manual_complete()
-function! s:check_back_space() abort "{{{
-let col = col('.') - 1
-return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
 
-" Autocomplete across buffers
+" Autocomplete across files
 set complete=.,b,u,w,t,]
+
+" ALE SETTINGS
+" Error and warning signs.
+let g:ale_sign_error = '⤫'
+let g:ale_sign_warning = '⚠'
 
 " Javascript linting
 let g:ale_linters = {
 \  'javascript': ['eslint'],
 \}
-
-call plug#begin('~/.config/nvim/plugged')
-Plug 'fatih/vim-go'
-Plug 'Raimondi/delimitMate'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'haya14busa/incsearch.vim'
-Plug 'easymotion/vim-easymotion'
-Plug 'scrooloose/nerdtree'
-Plug 'ervandew/supertab'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'idanarye/vim-merginal'
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
-Plug 'neoclide/vim-jsx-improve'
-Plug 'tpope/vim-surround'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'w0rp/ale'
-Plug 'jreybert/vimagit'
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'ryanoasis/vim-devicons'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plug 'airblade/vim-gitgutter'
-
-" Colorschemes
-Plug 'mkarmona/colorsbox'
-Plug 'exitface/synthwave.vim'
-Plug 'nanotech/jellybeans.vim'
-Plug 'jacoborus/tender.vim'
-call plug#end()
-
-" Go format
-let g:go_fmt_options = "-tabs=false -tabwidth=8"
-" Format Go on save
-autocmd FileType go autocmd BufWritePre <buffer> Fmt
-autocmd FileType go setlocal shiftwidth=8 tabstop=8 softtabstop=8
-autocmd FileType go setlocal noexpandtab
-
-
-" after a re-source, fix syntax matching issues (concealing brackets):
-if exists('g:loaded_webdevicons')
-    call webdevicons#softRefresh()
-endif
+" END ALE SETTINGS
 
 " Set color
-colo tender
+colo jellybeans
 
 filetype plugin on
 
@@ -125,6 +146,7 @@ endif
 
 " Fast saving
 nmap <leader>w :w<CR>
+nmap <leader>wa :wa<CR>
 
 " Search files and commits
 nnoremap <C-A> :Ag<CR>
@@ -137,19 +159,6 @@ nnoremap <C-T> :Windows<CR>
 " Trim white space
 nnoremap <C-S><C-T> :StripWhitespace<CR>
 
-" Delete trailing white space on save
-fun! CleanExtraSpaces()
-  let save_cursor = getpos(".")
-  let old_query = getreg('/')
-  silent! %s/\s\+$//e
-  call setpos('.', save_cursor)
-  call setreg('/', old_query)
-endfun
-
-if has("autocmd")
-  autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-endif
-
 "makes nerdtree close if it's the only window left
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
@@ -161,6 +170,8 @@ map N <Plug>(incsearch-nohl-N)
 map # <Plug>(incsearch-nohl-*)
 map * <Plug>(incsearch-nohl-#)
 map g/ <Plug>(incsearch-stay)
+set smartcase
+set ignorecase
 
 " highlights all found search terms
 set hlsearch
@@ -184,5 +195,42 @@ nnoremap <C-N> :NERDTreeToggle<CR>
 " Inserts new line where cursor is without entering insert mode
 nnoremap <CR> i<CR><Esc><BS>
 
+" Indent guide
+let g:indentLine_char = '⎸'
+let g:indentLine_enabled = 1
+let g:indentLine_color_gui = '#345260'
+
+" Go SETTINGS
+au FileType go set noexpandtab
+au FileType go set shiftwidth=4
+au FileType go set softtabstop=4
+au FileType go set tabstop=4
+
+" Go HIGHLIGHT
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+" Highlights same ID use
+let g:go_auto_sameids = 1
+
+" snakecase to json tags in Go
+let g:go_addtags_transform = "snakecase"
+
+" Go auto import deps
+let g:go_fmt_command = "goimports"
+
+" Go show type info in status line
+let g:go_auto_type_info = 1
+
+" Go extra lint buffer silence
+let g:go_fmt_fail_silently = 1
+
 " clear previous search on start
 let @/ = ''
+
+
